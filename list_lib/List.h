@@ -11,10 +11,7 @@ private:
 	TListElem<T>* end;
 public:
 	TList();
-
-	//TList(const TList& other);
 	~TList();
-	//TList<T>& operator = (TList<T>& _list);
 
 	void InsFirst(T d);
 	void InsLast(T d);
@@ -27,6 +24,10 @@ public:
 	void DelLast();
 	void Del(TListElem<T>* e);
 
+	bool elem(T e);
+	void swap(T old_elem, T new_elem);
+	void combine(const TList<T>& other);
+
 	template <class T1>
 	friend ostream& operator << (ostream& ostr, const TList<T1>& A);
 	template <class T1>
@@ -36,7 +37,7 @@ public:
 template<class T>
 inline TList<T>::TList()
 {
-	root = end = 0;
+	root = end = nullptr;
 }
 
 template<class T>
@@ -53,8 +54,8 @@ inline TList<T>::~TList()
 			delete p;
 		}
 
-		this->root = 0;
-		this->end = 0;
+		this->root = nullptr;
+		this->end = nullptr;
 	}
 }
 
@@ -64,20 +65,20 @@ inline void TList<T>::InsFirst(T d)
 	TListElem<T> *tmp = new TListElem<T>(d);
 	tmp->SetNext(root);
 	root = tmp;
-	if ((end == 0)||(root == 0)) end = root;
+	if ((end == nullptr)||(root == nullptr)) end = root;
 }
 
 template<class T>
 inline void TList<T>::InsLast(T d)
 {
-	if ((end == 0) && (root == 0)) this->InsFirst(d);
+	if ((end == nullptr) && (root == nullptr)) this->InsFirst(d);
 	else 
 	{
 		TListElem<T>* tmp = new TListElem<T>(d);
 		tmp->SetPrev(end);
 		end->SetNext(tmp);
 		end = tmp;
-		if ((end == 0) || (root == 0)) end = root;
+		if ((end == nullptr) || (root == nullptr)) end = root;
 	}
 }
 
@@ -107,7 +108,7 @@ inline TListElem<T>* TList<T>::GetLast()
 template<class T>
 inline void TList<T>::DelFirst()
 {
-	if ((root == 0) && (end == 0)) throw  logic_error("out_of_range");
+	if ((root == nullptr) && (end == nullptr)) throw  logic_error("out_of_range");
 	TListElem<T>* i = root;
 	root = root->GetNext();
 	delete i;
@@ -116,7 +117,7 @@ inline void TList<T>::DelFirst()
 template<class T>
 inline void TList<T>::DelLast()
 {
-	if ((root == 0) && (end == 0)) throw  logic_error("out_of_range");
+	if ((root == nullptr) && (end == nullptr)) throw  logic_error("out_of_range");
 	TListElem<T>* i = end;
 	end = end->GetPrev();
 	delete i;
@@ -126,7 +127,7 @@ inline void TList<T>::DelLast()
 template<class T>
 inline void TList<T>::Del(TListElem<T>* e)
 {
-	if ((root == 0) && (end == 0)) throw logic_error("out_of_range");
+	if ((root == nullptr) && (end == nullptr)) throw logic_error("out_of_range");
 	if (e == root)
 		this->DelFirst();
 	else if (e == end)
@@ -136,6 +137,44 @@ inline void TList<T>::Del(TListElem<T>* e)
 		e->GetPrev()->SetNext(e->GetNext());
 		e->GetNext()->SetPrev(e->GetPrev());
 		delete e;
+	}
+}
+
+template<class T>
+inline bool TList<T>::elem(T e)
+{
+	TListElem<T>* i = root;
+
+	while (i != NULL)
+	{
+		if (e == i->GetData()) return true;
+		i = i->GetNext();
+	}
+	return false;
+}
+
+template<class T>
+inline void TList<T>::swap(T old_elem, T new_elem)
+{
+	TListElem<T>* i = root;
+
+	while (i != NULL)
+	{
+		if (old_elem == i->GetData())
+			i->SetData(new_elem);
+		i = i->GetNext();
+	}
+}
+
+template<class T>
+inline void TList<T>::combine(const TList<T> &other)
+{
+	TListElem<T>* i = other.root;
+
+	while (i != NULL)
+	{
+		this->InsLast(i->GetData());
+		i = i->GetNext();
 	}
 }
 
@@ -168,22 +207,3 @@ inline istream& operator>>(istream& istr, TList<T1>& A)
 }
 
 
-
-/*
-template<class T>
-inline TList<T>::TList(const TList& other)
-{
-	TListElem<T>* i = other.root;
-
-	TListElem<T> j(*i);
-	this->root = &j;
-	i = i->GetNext();
-
-	while (i != NULL)
-	{
-		TListElem<T> k(*i);
-		i = i->GetNext();
-	}
-	this->end = i;
-}
-*/

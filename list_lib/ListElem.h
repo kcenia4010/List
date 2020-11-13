@@ -46,8 +46,8 @@ template<class T>
 inline TListElem<T>::TListElem(T _data)
 {
 	data = _data;
-	next = 0;
-	prev = 0;
+	next = nullptr;
+	prev = nullptr;
 }
 
 template<class T>
